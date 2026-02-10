@@ -1,0 +1,8 @@
+geopandas
+shapely
+requests
+pandas
+jupyter
+notebook
+pytest
+openpyxl
