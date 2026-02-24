@@ -97,3 +97,44 @@ def get_species(cnps_df, quads):
 
 
 
+#%%
+
+def get_neighbors(quad_ids, all_quads: gpd.GeoDataFrame):
+    '''
+    Find the neighboring quads surrounding a center quad.
+
+    Parameters
+    ----------
+    quad_ids : list
+        List containing quad cell IDs
+    all_quads : gpd.GeoDataFrame
+        GeoDataFrame containing all available quads to search
+
+    Returns 
+    ----------
+    set 
+        List of CELL_IDs of all neighboring quads, including the center quad(s).
+    
+    Notes
+    ----------
+    Buffers selected quad's bounding box by 2% on each side to intersect
+    surrounding quads without decimal point precision issues. 
+    '''
+
+    neighbors = []
+    for id in quad_ids:
+
+        quad = all_quads[all_quads['CELL_ID'] == id]
+
+        minx, miny, maxx, maxy = quad.total_bounds
+
+        # Expand quad bbox by 2% on each side
+        dx = (maxx - minx) * 0.02
+        dy = (maxy - miny) * 0.02
+        bbox = box(minx - dx, miny - dy, maxx + dx, maxy + dy)
+
+        neighbor_quads = all_quads[all_quads.intersects(bbox)].copy()
+        neighbors.extend(neighbor_quads['CELL_ID'].to_list())
+
+    return list(set(neighbors))
+# %%
