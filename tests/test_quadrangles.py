@@ -55,3 +55,4 @@ def test_quads_intersect_bbox_missing_id_column_raises():
 
     with pytest.raises(ValueError):
         get_quadrangles_intersecting_bbox(boundary, quads)
+
