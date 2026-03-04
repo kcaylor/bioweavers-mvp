@@ -1,8 +1,10 @@
 #%%
 from pathlib import Path
+import pandas as pd
 import geopandas as gpd
 import numpy as np
 from shapely.geometry import box
+from pathlib import Path
 
 #%%
 # Create a function to load the boundary file and return a GeoDataFrame.
@@ -177,5 +179,22 @@ def get_species(cnps_df, quad_ids):
 
 
 
+
+# %%
+def get_species_cnddb(file_path: str | Path, quad_ids):
+    """
+    Docstring for species_in_quads_cnddb
+    
+    :param species: Description
+    :param quads: Description
+
+    """
+    # Read the CNPS csv file
+    file_path = Path(file_path)    
+    
+    cnddb_df = pd.read_csv(file_path)
+
+    cnddb_species = cnddb_df[cnddb_df['KEYQUAD'].isin(quad_ids)].copy()
+    return cnddb_species
 
 # %%
