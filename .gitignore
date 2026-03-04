@@ -4,3 +4,5 @@ __pycache__/
 .ipynb_checkpoints/
 output/
 .DS_Store
+
+data/cnddb_obfs_dataset_V2/
