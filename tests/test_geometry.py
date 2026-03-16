@@ -1,9 +1,10 @@
 import numpy as np
+import pandas as pd
 import geopandas as gpd
 from shapely.geometry import box
 import pytest
 
-from src.geometry import get_bounding_box, _cell_map_code, get_quads
+from src.geometry import get_bounding_box, _cell_map_code, get_quads, get_species_cnps
 
 def _make_boundary():
     boundary_geom = box(-120.0, 34.0, -119.5, 34.5)
@@ -26,11 +27,11 @@ def _make_quads():
     )
 
 def _make_cnps():
-    return pd,.DataFrame({
+    return pd.DataFrame({
         'ScientificName': ['Species A', 'Species B', 'Species C'],
-        'split_quad': [3411728, 3411814, 3311776, 3411826], [3411814, 3411922, 3411934, 3411932],  [3411814, 3211782], # is this how we would create a list of quads
-        'geometry': [box(-120.1, 34.1, -119.9, 34.3), box(-119.8, 34.0, -119.6, 34.2), box(-120.5, 35.0, -120.3, 35.2)]
-    }, crs=4326)
+        'split_quad': [[3411728, 3411814, 3311776, 3411826], [3411814, 3411922, 3411934, 3411932],  [3411814, 3211782]] # is this how we would create a list of quads
+        #'geometry': [box(-120.1, 34.1, -119.9, 34.3), box(-119.8, 34.0, -119.6, 34.2), box(-120.5, 35.0, -120.3, 35.2)]
+    })
     
 
 # def test_load_boundary(tmp_path):
@@ -80,4 +81,18 @@ def test_get_quads():
     expected_quad_ids = {1234411, 1234521}
     assert intersecting_quads == expected_quad_ids
 
- # def test_get_species():  # THIS TEST REQUIRES MAKING A MOCK CNPS AND CNDDB DATAFRAME, WHICH IS A LOT OF WORK. MAYBE WE CAN DO THIS LATER.
+def test_get_species():  # THIS TEST REQUIRES MAKING A MOCK CNPS AND CNDDB DATAFRAME, WHICH IS A LOT OF WORK. MAYBE WE CAN DO THIS LATER.
+    # Arrange
+    cnps_df = _make_cnps()
+    quad_ids = {3411728, 3411814}
+
+    # Act
+    species_in_quads = get_species_cnps(cnps_df, quad_ids)
+
+    # Assert
+    # Check that the result is a DataFrame.
+    assert isinstance(species_in_quads, pd.DataFrame)
+
+    # Check that the correct species are returned.
+    expected_species = ['Species A', 'Species B']
+    assert set(species_in_quads['ScientificName']) == set(expected_species)
